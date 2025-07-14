@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <!-- Meta tags for character set and responsive design -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page title -->
+    <title>الأيتام المؤرشفين</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Lightbox2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+
+    <!-- Internal CSS -->
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+            font-size: 24px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-add {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            color: white;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #4CAF50;
+        }
+
+        .btn-add:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        img {
+            max-width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-details {
+            background-color: #3498db;
+        }
+
+        .btn-details:hover {
+            background-color: #2980b9;
+        }
+
+        .action-buttons {
+            border: none;
+            outline: none;
+            box-shadow: none;
+        }
+
+        .action-buttons form {
+            display: inline;
+            margin: 0;
+        }
+    </style>
+
+    <!-- Lightbox2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
+    <!-- Internal JavaScript -->
+    <script>
+        function confirmDelete(event) {
+            if (!confirm("هل أنت متأكد أنك تريد حذف هذا اليتيم؟")) {
+                event.preventDefault();
+            }
+        }
+
+        function triggerFileInput() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileChange(event) {
+            document.getElementById('uploadForm').submit();
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <a style="text-decoration: none;" href="{% url 'archived_orphans' %}">
+            <h1>الأيتام المؤرشفين</h1>
+        </a>
+
+        <!-- Back to orphans list -->
+        <div class="buttons-container">
+            <a href="{% url 'orphan_list' %}" class="btn-add">العودة إلى قائمة الأيتام</a>
+        </div>
+
+        <!-- Archived orphans table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>الاسم</th>
+                    <th>رقم الهوية</th>
+                    <th>تاريخ الميلاد</th>
+                    <th>اسم الوصي</th>
+                    <th>رقم هوية الوصي</th>
+                    <th>رقم جوال الوصي</th>
+                    <th>الصورة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for orphan in archived_orphans %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ orphan.full_name }}</td>
+                    <td>{{ orphan.id_number }}</td>
+                    <td>{{ orphan.date_of_birth|date:"Y-m-d" }}</td>
+                    <td>{{ orphan.guardian_name }}</td>
+                    <td>{{ orphan.guardian_id_number }}</td>
+                    <td>{{ orphan.guardian_phone }}</td>
+                    <td>
+                        {% if orphan.photo %}
+                        <a href="{{ orphan.photo.url }}" data-lightbox="archived-orphan-photos"
+                            data-title="صورة {{ orphan.full_name }}">
+                            <img src="{{ orphan.photo.url }}" alt="صورة {{ orphan.full_name }}">
+                        </a>
+                        {% else %}
+                        <p>لا توجد صورة</p>
+                        {% endif %}
+                    </td>
+                    <td class="action-buttons">
+                        <a href="{% url 'archived_sponsorships' orphan.id %}" class="btn btn-details">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

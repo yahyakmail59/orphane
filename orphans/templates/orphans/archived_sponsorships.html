@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل كفالات الأيتام المؤرشفة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+            font-size: 24px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .btn-back {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            background-color: #45a049;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .receipt-image {
+            max-width: 200px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="{% url 'archived_orphans' %}" class="btn-back">عودة إلى قائمة الأيتام المؤرشفة</a>
+        <h1>تفاصيل كفالات الأيتام المؤرشفة</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>اسم اليتيم</th>
+                    <th>اسم الكافل</th>
+                    <th>تاريخ الكفالة</th>
+                    <th>المبلغ</th>
+                    <th>صورة الإستلام</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sponsorship in archived_sponsorships %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ sponsorship.orphan.full_name }}</td>
+                    <td>{{ sponsorship.sponsor_name }}</td>
+                    <td>{{ sponsorship.sponsorship_date|date:"d/m/Y" }}</td>
+                    <td>{{ sponsorship.amount }} ₪</td>
+                    <td>
+                        {% if sponsorship.receipt_image %}
+                        <img width="100px" src="{{ sponsorship.receipt_image.url }}" alt="صورة إستلام الكفالة"
+                            class="receipt-image">
+                        {% else %}
+                        لا توجد صورة
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">لا توجد كفالات مؤرشفة.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
